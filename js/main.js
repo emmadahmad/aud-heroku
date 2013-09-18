@@ -15,7 +15,7 @@
 
 		tmplt = {
 			room: [			
-				'<a href="#" data-roomId="${room}" class="list-group-item">',
+				'<a href="javascript:void(0)" data-roomId="${room}" class="list-group-item">',
 					'${room}',
 				'</a>'
 			].join(""),
@@ -42,7 +42,7 @@
 		$('#channels').hide();
 		$('#channel-error').hide();
 		
-		$('.toggle').click(function()
+		/*$('.toggle').click(function()
 		{
 			var col = $(this).css('color');
 			
@@ -67,7 +67,7 @@
 			{
 				$(this).css('color', '#222');
 			}	
-		});
+		});*/
 		
 		$('#txtUsername').on('keydown', function(e)
 		{

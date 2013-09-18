@@ -48,9 +48,9 @@
 		<div class="panel-heading">
 			<span id="channel-title"> </span>			
 			<div class="action-icons">
-				<a class="action toggle" title="Start Call" href="#"><span class="glyphicon glyphicon-earphone"> </span></a>
-				<a class="action toggle" title="Mute" href="#"><span class="glyphicon glyphicon-volume-up"> </span></a>
-				<a class="action" title="Hangup" href="#"><span class="glyphicon glyphicon-log-out"> </span></a>
+				<a class="action toggle" title="Start Call" href="javascript:void(0)"><span class="glyphicon glyphicon-earphone"> </span></a>
+				<a class="action toggle" title="Mute" href="javascript:void(0)"><span class="glyphicon glyphicon-volume-up"> </span></a>
+				<a class="action" title="Hangup" href="javascript:void(0)"><span class="glyphicon glyphicon-log-out"> </span></a>
 			</div>
 		</div>
 		<div id="users" class="list-group">
@@ -86,30 +86,7 @@
 	</div>
 	<div id="audio" class="pop-panel panel panel-default text-center">
 		<div class="panel-heading">
-			Self Audio Recording
-		</div>
-		<div class="list-group">
-			<div class="list-group-item">
-				<button id="record" class="btn btn-xs btn-danger audio" title="Start Recording" type="button">
-					<span class="glyphicon glyphicon-record"> </span>
-				</button>
-				<button id="stop" class="btn btn-xs btn-primary audio" title="Stop Recording" type="button">
-					<span class="glyphicon glyphicon-stop"> </span>
-				</button>
-				<button id="play" class="btn btn-xs btn-success audio" title="Play Recorded Audio" type="button">
-					<span class="glyphicon glyphicon-play"> </span>
-				</button>
-			</div>
-			<div class="list-group-item">
-				<audio id="audioPlayer" autoplay="" loop="" controls=""> </audio>
-				<div id="time">0:00</div>
-			</div>
-			<div class="list-group-item" id="audio-url">
-				Start
-			</div>
-			<div class="list-group-item alert alert-info info">
-				Practice by Recording.
-			</div>
+			<a href="http://yuztech.com/helen-project/index.html">Self Audio Recording</a>
 		</div>
 	</div>
 </div>
@@ -121,18 +98,6 @@
 <script src='js/jquery.tmpl.min.js'></script>
 <script src='js/adapter.js'></script>
 <script src='js/main.js'></script>
-<script src='js/RecordRTC.js'></script>
 <script src='js/webrtc.js'></script>
-<script src='js/audio.js'></script>
-<script>
-$(document).ready()
-{
-	$.getScript('js/recorderlib.js', function()
-	{
-		$.getScript('js/initialize.js', function()
-		{});
-	});
-}
-</script>
 </body>
 </html>
