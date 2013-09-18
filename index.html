@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
+<meta name='description' content='WebRTC Reference App' />
+<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+<link rel='stylesheet' href='css/main.css' />
+
+<title>Audio Chat</title>
+
+</head>
+
+<body>
+	
+<div class="modal fade" id="createChannel" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="input-group">
+					<input id="txtChannel" type="text" class="form-control" placeholder="Enter Channel Name">
+					<span class="input-group-btn">
+						<button id="btnChannel" class="btn btn-default" type="button">
+							Create
+						</button>
+						<button class="btn btn-default" data-dismiss="modal" type="button">
+							Cancel
+						</button>
+					</span>
+				</div>
+				<div class="list-group-item alert alert-danger error"> </div>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div id='container'>
+
+  <div id='videos'>
+    <audio id='localVideo' autoplay muted> </audio>
+    <audio id='remoteVideo' autoplay> </audio>
+  </div>
+
+</div>
+<div id="pop">	
+	<div id="open-channel" class="pop-panel panel panel-default text-center">
+		<div class="panel-heading">
+			<span id="channel-title"> </span>			
+			<div class="action-icons">
+				<a class="action toggle" title="Start Call" href="#"><span class="glyphicon glyphicon-earphone"> </span></a>
+				<a class="action toggle" title="Mute" href="#"><span class="glyphicon glyphicon-volume-up"> </span></a>
+				<a class="action" title="Hangup" href="#"><span class="glyphicon glyphicon-log-out"> </span></a>
+			</div>
+		</div>
+		<div id="users" class="list-group">
+		</div>		
+	</div>
+	
+	<div id="channels" class="pop-panel panel panel-default text-center">
+		<div class="panel-heading">
+			Channels
+			<div class="action-icons">
+				<a class="action toggle" title="Create a Channel" data-toggle="modal" href="#createChannel"><span class="glyphicon glyphicon-plus-sign"> </span></a>
+			</div>
+		</div>
+		<div id="rooms" class="list-group">
+			<div class="list-group-item alert alert-danger error"> </div>
+		</div>
+	</div>
+	<div id="signin" class="pop-panel panel panel-default text-center">
+		<div class="panel-heading">
+			Log In		
+		</div>
+		<div class="list-group">
+			<div class="input-group">
+				<input id="txtUsername" type="text" class="form-control" placeholder="Enter a username">
+				<span class="input-group-btn">
+					<button id="btnUsername" class="btn btn-default" type="button">
+						Go!
+					</button> </span>
+			</div>
+			<div class="list-group-item alert alert-info info">Enter a User Name upto 15 characters</div>
+			<div class="list-group-item alert alert-danger error"> </div>
+		</div>
+	</div>
+	<div id="audio" class="pop-panel panel panel-default text-center">
+		<div class="panel-heading">
+			Self Audio Recording
+		</div>
+		<div class="list-group">
+			<div class="list-group-item">
+				<button id="record" class="btn btn-xs btn-danger audio" title="Start Recording" type="button">
+					<span class="glyphicon glyphicon-record"> </span>
+				</button>
+				<button id="stop" class="btn btn-xs btn-primary audio" title="Stop Recording" type="button">
+					<span class="glyphicon glyphicon-stop"> </span>
+				</button>
+				<button id="play" class="btn btn-xs btn-success audio" title="Play Recorded Audio" type="button">
+					<span class="glyphicon glyphicon-play"> </span>
+				</button>
+			</div>
+			<div class="list-group-item">
+				<audio id="audioPlayer" autoplay="" loop="" controls=""> </audio>
+				<div id="time">0:00</div>
+			</div>
+			<div class="list-group-item" id="audio-url">
+				Start
+			</div>
+			<div class="list-group-item alert alert-info info">
+				Practice by Recording.
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script src='/socket.io/socket.io.js'></script>
+<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src='js/jquery.tmpl.min.js'></script>
+<script src='js/adapter.js'></script>
+<script src='js/main.js'></script>
+<script src='js/RecordRTC.js'></script>
+<script src='js/webrtc.js'></script>
+<script src='js/audio.js'></script>
+<script>
+$(document).ready()
+{
+	$.getScript('js/recorderlib.js', function()
+	{
+		$.getScript('js/initialize.js', function()
+		{});
+	});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+#pop
+{	
+	position:fixed;	
+	bottom:0;
+	right:0;
+}
+.pop-panel
+{
+	display:inline-block;
+	margin-bottom:0;
+	margin-right:20px;
+	width:250px;
+}
+
+.panel-heading
+{
+	position:relative;
+	cursor:pointer;
+}
+.action-icons
+{
+	position:absolute;
+	float:right;
+	right:0;
+	top:11px;
+	padding-right:5px;
+}
+.action
+{
+	color:#999;
+	padding-right:1px;
+}
+.action:hover
+{
+	color:#333;
+}
+.input-group
+{
+	padding:20px 10px;
+}
+
+audio
+{
+	width:200px;
+}
+.information
+{
+	font-size:10px;
+}
