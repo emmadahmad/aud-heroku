@@ -6,12 +6,7 @@
 		socket = null,
 		clientId = null,
 		nickname = null,
-
 		currentRoom = null,
-
-		//serverAddress = 'http://localhost',
-		serverDisplayName = 'Server',
-		serverDisplayColor = '#1c5380',
 
 		tmplt = {
 			room: [			
@@ -25,6 +20,31 @@
 				'</div>'
 			].join("")
 		};
+	
+	//WEBRTC Variables	
+	var isChannelReady = false;
+	var isInitiator;
+	var isStarted = false;
+	var localStream;
+	var pc;
+	var remoteStream;
+	var turnReady;
+	var room = '';
+	var pc_config = webrtcDetectedBrowser === 'firefox' ?
+	  {'iceServers':[{'url':'stun:23.21.150.121'}]} : // number IP
+	  {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+
+	var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
+
+	// Set up audio and video regardless of what devices are present.
+	var sdpConstraints = {'mandatory': {
+	  'OfferToReceiveAudio':true,
+	  'OfferToReceiveVideo':true }};
+
+	var localVideo = document.querySelector('#localVideo');
+	var remoteVideo = document.querySelector('#remoteVideo');
+	var constraints = {video: true, audio: true};
+	// END
 
 	function bindDOMEvents()
 	{
@@ -95,8 +115,8 @@
 		{
 
 			var room = $(this).attr('data-roomId');
-			console.log(room);
-			console.log(currentRoom);
+			//console.log(room);
+			//console.log(currentRoom);
 			if(room != currentRoom)
 			{
 				socket.emit('unsubscribe', { room: currentRoom });
@@ -115,6 +135,12 @@
 		socket.on('ready', function(data)
 		{			
 			clientId = data.clientId;
+		});
+		
+		socket.on('message', function(message)
+		{
+			console.log("S -> C " + message.type + " --- " + message);
+			maybeStart();
 		});
 
 		socket.on('roomslist', function(data)
@@ -143,6 +169,23 @@
 			}
 		});
 		
+		socket.on('numofclients', function(data)
+		{
+			if (data.numofclients > 1)
+			{
+				isChannelReady = true;
+			}
+				
+			else
+			{
+				isChannelReady = false;
+				isStarted = false;
+			}
+				
+			console.log(isChannelReady);
+				
+		});
+		
 		socket.on('addroom', function(data)
 		{
 			addRoom(data.room, true);
@@ -161,6 +204,16 @@
 				removeClient(data.client, true);
 			}
 		});
+		
+		socket.on('log', function (array){
+			  console.log.apply(console, array);
+			});
+	}
+	
+	function sendMessage(message)
+	{
+		socket.emit('message', message);
+		//console.log("SENDING MESSAGE : " + message.type + " --- " + message);
 	}
 
 	function addRoom(name, announce)
@@ -245,6 +298,7 @@
 			$('#channels').show();
 			$('#txtUsername').val('');
 			connect();
+			initiate();
 		} 
 		else 
 		{
@@ -263,5 +317,80 @@
 	{
 		bindDOMEvents();
 	});
+	
+	window.onbeforeunload = function(e)
+	{
+		sendMessage('clientId : ' + clientId + ' nickname : ' + nickname + ' has exited from ' + currentRoom);
+	}
+	
+	/********************************  WebRTC Now ******************************/
+	
+	function handleUserMedia(stream)
+	{
+		localStream = stream;
+		attachMediaStream(localVideo, stream);
+		sendMessage('Got User Media');
+	}
+
+	function handleUserMediaError(error)
+	{
+		  console.log('ERROR - User Media : ', error);
+	}
+
+	function initiate()
+	{
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || false;
+		navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
+	}
+	
+	function maybeStart() 
+	{
+		if (!isStarted && localStream && isChannelReady)
+		{
+			createPeerConnection();
+			pc.addStream(localStream);
+			isStarted = true;
+			/*if (isInitiator) 
+			{
+				doCall();
+			}*/
+		}
+	}
+	
+	function createPeerConnection()
+	{
+		try 
+		{
+		   pc = new RTCPeerConnection(pc_config, pc_constraints);
+		   pc.onicecandidate = handleIceCandidate;
+		   console.log('Created RTCPeerConnnection with:\n' +
+		     '  config: \'' + JSON.stringify(pc_config) + '\';\n' +
+		     '  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
+		}
+		catch (e) 
+		{
+			//console.log('Failed to create PeerConnection, exception: ' + e.message);
+			alert('Cannot create RTCPeerConnection object.');
+			return;
+		}
+	}
+	
+	function handleIceCandidate(event) 
+	{	
+		//console.log('handleIceCandidate event: ', event);
+		if (event.candidate) 
+		{
+			sendMessage({
+			type: 'candidate',
+			label: event.candidate.sdpMLineIndex,
+			id: event.candidate.sdpMid,
+			candidate: event.candidate.candidate});
+		}
+		else 
+		{
+		//console.log('End of candidates.');
+		}
+	}
+	
 
 })(jQuery);

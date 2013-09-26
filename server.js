@@ -20,10 +20,13 @@ function handler(req, res)
 }
 
 io.set('log level', 2);
-io.configure(function () { 
+
+/* Because of the configuration below socket.on(disconnect) was not being called. Figure out why.*/
+
+/*io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10); 
-});
+});*/
 
 io.sockets.on('connection', function (socket)
 {
@@ -42,6 +45,23 @@ io.sockets.on('connection', function (socket)
 	socket.on('disconnect', function(){
 		disconnect(socket);
 	});
+	
+	socket.on('message', function(data)
+	{
+		log(data);
+		socket.broadcast.emit('message', data); // SHOULD BE ONLY ROOM. CHANGE TO ROOM AFTERWARDS.
+	});
+	
+	function log()
+	{
+		var array = ["C -> S : "];
+	  	for (var i = 0; i < arguments.length; i++)
+	  	{
+	  		array.push(arguments[i]);
+	  	}
+	    socket.emit('log', array);
+	    console.log(array);
+	}
 });
 
 function connect(socket, data)
@@ -55,6 +75,7 @@ function connect(socket, data)
 
 function disconnect(socket)
 {
+	//console.log("Disconnect called");
 	var rooms = io.sockets.manager.roomClients[socket.id];
 
 	for(var room in rooms)
@@ -70,6 +91,7 @@ function disconnect(socket)
 
 function subscribe(socket, data)
 {
+	
 	var rooms = getRooms();
 
 	if(rooms.indexOf('/' + data.room) < 0)
@@ -82,16 +104,23 @@ function subscribe(socket, data)
 	updatePresence(data.room, socket, 'online');
 
 	socket.emit('roomclients', { room: data.room, clients: getClientsInRoom(socket.id, data.room) });
+	io.sockets.in(data.room).emit('numofclients', { room: data.room, numofclients: countClientsInRoom(data.room) });
+	//console.log(countClientsInRoom(data.room));
 }
 
 function unsubscribe(socket, data)
 {
+	//console.log("Unsubscribe called");
 	updatePresence(data.room, socket, 'offline');
 	socket.leave(data.room);
 	if(!countClientsInRoom(data.room))
 	{
 		io.sockets.emit('removeroom', { room: data.room });
 	}
+	else
+	{
+		io.sockets.in(data.room).emit('numofclients', { room: data.room, numofclients: countClientsInRoom(data.room) });
+	}		
 }
 
 function getRooms()
@@ -106,7 +135,7 @@ function getClientsInRoom(socketId, room)
 	
 	if(socketIds && socketIds.length > 0)
 	{
-		socketsCount = socketIds.lenght;
+		socketsCount = socketIds.length;
 		
 		for(var i = 0, len = socketIds.length; i < len; i++)
 		{
@@ -116,6 +145,7 @@ function getClientsInRoom(socketId, room)
 			}
 		}
 	}
+	//console.log(clients);
 	return clients;
 }
 
@@ -130,6 +160,7 @@ function countClientsInRoom(room)
 
 function updatePresence(room, socket, state)
 {
+	//console.log("Update Presence called");
 	room = room.replace('/','');
 	socket.broadcast.to(room).emit('presence', { client: chatClients[socket.id], state: state, room: room });
 }
