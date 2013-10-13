@@ -49,7 +49,9 @@ io.sockets.on('connection', function (socket)
 	socket.on('message', function(data)
 	{
 		log(data);
-		socket.broadcast.emit('message', data); // SHOULD BE ONLY ROOM. CHANGE TO ROOM AFTERWARDS.
+		//socket.broadcast.emit('message', data); // SHOULD BE ONLY ROOM. CHANGE TO ROOM AFTERWARDS.
+		socket.broadcast.to(data.room).emit('message', data);
+		//io.sockets.in(data.room).emit('message', data);
 	});
 	
 	function log()
@@ -60,7 +62,7 @@ io.sockets.on('connection', function (socket)
 	  		array.push(arguments[i]);
 	  	}
 	    socket.emit('log', array);
-	    console.log(array);
+	    //console.log(array);
 	}
 });
 
