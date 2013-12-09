@@ -242,8 +242,8 @@
 		});
 		
 		socket.on('log', function (array){
-			  console.log.apply(console, array.mes);
-			});
+		  console.log.apply(console, array.mes);
+		});
 	}
 	
 	function sendMessage(message)
